@@ -1,0 +1,39 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: apigateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOrigins:
+              - "http://${CORS_HOST:localhost}:${CORS_PORT:80}"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+            allowedHeaders: "*"
+            allowCredentials: false
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Methods Access-Control-Allow-Headers RETAIN_FIRST
+      routes:
+
+server:
+  port: ${PORT:8000}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 15
+    ip-address: ${PUBLIC_HOST:localhost}
+    instance-id: ${eureka.instance.ip-address}:${spring.application.name}:${server.port}
+  client:
+    service-url:
+      defaultZone: http://${EUREKA_HOSTNAME:localhost}:${EUREKA_PORT:8761}/eureka/
