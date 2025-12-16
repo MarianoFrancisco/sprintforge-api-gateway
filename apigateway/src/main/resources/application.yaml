@@ -34,11 +34,11 @@ spring:
                   - Origin
                 allowCredentials: false
           default-filters:
-            - XForwardedHeaders
             - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Methods Access-Control-Allow-Headers RETAIN_FIRST
 
 server:
   port: ${PORT:8000}
+  forward-headers-strategy: framework
 
 security:
   jwt:
