@@ -16,6 +16,10 @@ spring:
               uri: lb://employee
               predicates:
                 - Path=/api/v1/employee/**,/api/v1/position/**
+            - id: scrum
+              uri: lb://scrum
+              predicates:
+                - Path=/api/v1/project/**,/api/v1/board-column/**,/api/v1/work-item/**,/api/v1/sprint/**,/api/v1/board/**,/api/v1/payment/**
           discovery:
             locator:
               enabled: true
