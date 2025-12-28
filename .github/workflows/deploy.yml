@@ -1,0 +1,64 @@
+name: api-gateway
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set env
+        run: |
+          echo "HOST=${{ secrets.AWS_VM_HOST }}" >> $GITHUB_ENV
+          echo "EUREKA_HOSTNAME=${{ secrets.EUREKA_HOSTNAME }}" >> $GITHUB_ENV
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
+          echo "PUBLIC_HOST=${{ secrets.PUBLIC_HOST }}" >> $GITHUB_ENV
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.AWS_VM_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+
+      - name: Deploy to AWS VM
+        run: |
+          ssh ${{ secrets.AWS_VM_USER }}@"$HOST" << EOF
+            set -e
+
+            cd ~
+
+            if [ ! -d "sprintforge-api-gateway" ]; then
+              git clone https://github.com/MarianoFrancisco/sprintforge-api-gateway.git
+            fi
+
+            cd sprintforge-api-gateway
+
+            git fetch --all
+            git checkout ${GITHUB_REF_NAME}
+            git pull
+
+            sudo docker container prune -f || true
+            sudo docker image prune -af || true
+            sudo docker builder prune -af || true
+            sudo docker volume prune -f || true
+
+            sudo docker build -t api-gateway .
+
+            sudo docker stop api-gateway || true
+            sudo docker rm api-gateway || true
+
+            sudo docker run -d --name api-gateway \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              -e EUREKA_HOSTNAME="${EUREKA_HOSTNAME}" \
+              -e JWT_SECRET="${JWT_SECRET}" \
+              -e PUBLIC_HOST="${PUBLIC_HOST}" \
+              api-gateway
+          EOF
