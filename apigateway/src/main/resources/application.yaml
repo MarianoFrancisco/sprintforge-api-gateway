@@ -1,3 +1,7 @@
+server:
+  port: ${PORT:8000}
+  forward-headers-strategy: framework
+
 spring:
   config:
     import: optional:file:.env[.properties]
@@ -33,10 +37,6 @@ spring:
 
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials RETAIN_FIRST
-
-server:
-  port: ${PORT:8000}
-  forward-headers-strategy: framework
 
 security:
   jwt:
