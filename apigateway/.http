@@ -1,0 +1,36 @@
+@host = http://localhost:8001
+
+GET {{host}}/api/v1/user
+Content-Type: application/json
+###
+
+POST {{host}}/api/v1/auth/set-initial-password
+Accept: */*
+Content-Type: application/json
+
+{
+  "token": "string",
+  "userId": "2948bcde-e159-416d-8dcc-408f57ce5448",
+  "newPassword": "Sprintforge!1234"
+}
+
+###
+
+POST {{host}}/api/v1/auth/login
+Accept: */*
+Content-Type: application/json
+
+{
+  "email": "manu@exmaple6.com",
+  "password": "Sprintforge!1234"
+}
+###
+
+POST {{host}}/api/v1/auth/refresh
+Accept: */*
+Content-Type: application/json
+
+{
+  "authSessionId": "0e350e9f-3d10-43e8-9188-3727935bd9cd",
+  "refreshToken": "mrqO6KP9B7jalKLT27xWEZK7BDRdRMG2yXwRzbDYYDTBpClbpvCmRAS9Qpx3SH8bSfzdx08Bpljj-TbR_SCd4g"
+}
