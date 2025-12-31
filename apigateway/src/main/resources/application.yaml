@@ -30,6 +30,11 @@ spring:
               predicates:
                 - Path=/api/v1/project/**,/api/v1/board-column/**,/api/v1/work-item/**,/api/v1/sprint/**,/api/v1/board/**,/api/v1/payment/**
 
+            - id: scrum-activity
+              uri: lb://scrum-activity
+              predicates:
+                - Path=/api/v1/scrum-activity/**
+
             - id: reporting
               uri: lb://reporting
               predicates:
